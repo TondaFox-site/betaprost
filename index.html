@@ -1,0 +1,1742 @@
+<!-- 1K -->
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>Unga Bunga V2</title>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+<style>
+
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
+
+body.light{
+background:#f1f5f9;
+color:black;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:20px;
+margin-top:20px;
+}
+
+body.light .card{
+background:white;
+}
+
+input,
+textarea,
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border:none;
+border-radius:12px;
+}
+
+button{
+background:#2563eb;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+.hidden{
+display:none;
+}
+
+.menu{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:15px;
+}
+
+.menu button{
+flex:1;
+min-width:120px;
+}
+
+.news{
+background:#334155;
+padding:15px;
+border-radius:15px;
+margin-top:10px;
+}
+
+.badge{
+background:#ef4444;
+padding:3px 8px;
+border-radius:8px;
+font-size:12px;
+}
+
+.profile{
+display:flex;
+gap:15px;
+align-items:center;
+}
+
+.avatar{
+font-size:55px;
+}
+
+.chatBadge{
+background:red;
+color:white;
+border-radius:50%;
+padding:2px 7px;
+font-size:12px;
+margin-left:5px;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+
+<div id="loginPage">
+
+<div class="card">
+
+<h1>Unga Bunga V2</h1>
+
+<input
+id="loginEmail"
+placeholder="Email">
+
+<input
+id="loginPass"
+type="password"
+placeholder="Heslo">
+
+<input
+id="registerUsername"
+placeholder="Uživatelské jméno">
+
+<button onclick="login()">
+Přihlásit
+</button>
+
+<button onclick="register()">
+Registrovat
+</button>
+
+</div>
+
+</div>
+
+<!-- APP -->
+
+<div
+id="appPage"
+class="hidden">
+
+<div class="card">
+
+<div class="profile">
+
+<div
+class="avatar"
+id="avatar">
+
+<i class="fa-solid fa-user"></i>
+
+</div>
+
+<div>
+
+<h2 id="welcome"></h2>
+
+<div id="role"></div>
+
+<div id="level"></div>
+
+</div>
+
+</div>
+
+<div class="menu">
+
+<button onclick="tab('dashboard')">
+Dashboard
+</button>
+
+<button onclick="tab('chatTab')">
+
+Chat
+
+<span
+id="chatBadge"
+class="chatBadge hidden">
+
+0
+
+</span>
+
+</button>
+
+<button onclick="tab('profileTab')">
+Profil
+</button>
+
+<button onclick="tab('profilesTab')">
+Profily
+</button>
+
+<button onclick="tab('settingsTab')">
+Nastavení
+</button>
+
+<button
+id="adminBtn"
+class="hidden"
+onclick="tab('adminTab')">
+
+Admin
+
+</button>
+
+<button onclick="logout()">
+Odhlásit
+</button>
+
+</div>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div
+id="dashboard"
+class="card tab">
+
+<h2>Dashboard</h2>
+
+<h1 id="money"></h1>
+
+<div class="news">
+
+VERZE: 1.1
+
+</div>
+
+<div class="news">
+
+NOVINKY:
+
+<br>
+
+• Banka
+
+<br>
+
+• Upozornění v chatu
+
+</div>
+
+<div class="news">
+
+Počet uživatelů:
+
+<span id="usersCount">
+
+0
+
+</span>
+
+</div>
+
+</div>
+
+<!-- CHAT -->
+
+<div
+id="chatTab"
+class="card tab hidden">
+
+<h2>Globální chat</h2>
+
+<div
+id="chat"
+style="
+height:400px;
+overflow-y:auto;
+background:#0f172a;
+padding:10px;
+border-radius:15px;
+">
+
+</div>
+
+<input
+id="chatInput"
+placeholder="Zpráva">
+
+<button onclick="sendChat()">
+Poslat
+</button>
+
+</div>
+<!-- 2K -->
+
+<!-- PROFILE -->
+
+<div
+id="profileTab"
+class="card tab hidden">
+
+<h2>Můj profil</h2>
+
+<textarea
+id="bio"
+placeholder="Veřejný popis">
+
+</textarea>
+
+<input
+id="changeUsername"
+placeholder="Nové uživatelské jméno">
+
+<button onclick="saveProfile()">
+Uložit profil
+</button>
+
+<div
+id="profileInfo"
+class="news">
+
+</div>
+
+</div>
+
+<!-- VEŘEJNÉ PROFILY -->
+
+<div
+id="profilesTab"
+class="card tab hidden">
+
+<h2>Veřejné profily</h2>
+
+<div id="profilesList"></div>
+
+</div>
+
+<!-- NASTAVENÍ -->
+
+<div
+id="settingsTab"
+class="card tab hidden">
+
+<h2>Nastavení</h2>
+
+<button onclick="toggleTheme()">
+Tmavý / světlý režim
+</button>
+
+<input
+id="newPassword"
+type="password"
+placeholder="Nové heslo">
+
+<button onclick="changePassword()">
+Změnit heslo
+</button>
+
+<button
+style="background:#dc2626"
+onclick="deleteMyAccount()">
+
+Smazat účet
+
+</button>
+
+</div>
+
+<!-- ADMIN -->
+
+<div
+id="adminTab"
+class="card tab hidden">
+
+<h2>Admin panel</h2>
+
+<div id="users"></div>
+
+</div>
+
+</div>
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+
+import {
+getDatabase,
+ref,
+set,
+get,
+push,
+update,
+remove,
+onValue
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+import {
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+signOut,
+onAuthStateChanged,
+updatePassword,
+deleteUser
+}
+from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+const firebaseConfig={
+
+/* TVŮJ FIREBASE CONFIG */
+
+};
+
+const app=
+initializeApp(firebaseConfig);
+
+const db=
+getDatabase(app);
+
+const auth=
+getAuth(app);
+
+let currentUser=null;
+let currentUID=null;
+
+let unreadCount=0;
+let chatOpened=false;
+
+window.login=login;
+window.register=register;
+window.logout=logout;
+window.tab=tab;
+window.sendChat=sendChat;
+
+async function register(){
+
+const user=
+await createUserWithEmailAndPassword(
+auth,
+loginEmail.value,
+loginPass.value
+);
+
+await set(
+ref(db,"users/"+user.user.uid),
+{
+username:
+registerUsername.value,
+
+email:
+loginEmail.value,
+
+role:"user",
+
+money:1000,
+
+verified:false,
+
+banned:false,
+
+muted:false,
+
+xp:0,
+
+level:1,
+
+bio:"",
+
+registered:
+new Date().toLocaleDateString()
+}
+);
+
+}
+
+async function login(){
+
+await signInWithEmailAndPassword(
+auth,
+loginEmail.value,
+loginPass.value
+);
+
+}
+
+onAuthStateChanged(
+auth,
+async(user)=>{
+
+if(!user){
+
+loginPage.classList.remove(
+"hidden"
+);
+
+appPage.classList.add(
+"hidden"
+);
+
+return;
+
+}
+
+currentUID=user.uid;
+
+let snap=
+await get(
+ref(db,"users/"+user.uid)
+);
+
+currentUser=
+snap.val();
+
+openApp();
+
+});
+
+function openApp(){
+
+loginPage.classList.add(
+"hidden"
+);
+
+appPage.classList.remove(
+"hidden"
+);
+
+welcome.innerHTML=
+currentUser.username;
+
+money.innerHTML=
+currentUser.money+
+" Hungů";
+
+level.innerHTML=
+"Level "+
+currentUser.level+
+" | XP "+
+currentUser.xp;
+
+if(
+currentUser.role==="admin"
+){
+
+adminBtn.classList.remove(
+"hidden"
+);
+
+}
+
+loadProfiles();
+loadChat();
+loadUsers();
+
+}
+<!-- 3K -->
+
+function tab(id){
+
+document
+.querySelectorAll(".tab")
+.forEach(tab=>{
+
+tab.classList.add("hidden");
+
+});
+
+document
+.getElementById(id)
+.classList.remove("hidden");
+
+if(id==="chatTab"){
+
+chatOpened=true;
+
+unreadCount=0;
+
+chatBadge.innerHTML="0";
+
+chatBadge.classList.add(
+"hidden"
+);
+
+setTimeout(()=>{
+
+chat.scrollTop=
+chat.scrollHeight;
+
+},100);
+
+}
+
+}
+
+/* CHAT */
+
+async function sendChat(){
+
+if(
+currentUser.muted
+){
+
+alert("Jsi umlčen");
+return;
+
+}
+
+let text=
+chatInput.value.trim();
+
+if(text===""){
+return;
+}
+
+await push(
+ref(db,"chat"),
+{
+user:
+currentUser.username,
+
+uid:
+currentUID,
+
+text:
+text,
+
+time:
+new Date()
+.toLocaleTimeString(),
+
+edited:false
+}
+);
+
+chatInput.value="";
+
+}
+
+function loadChat(){
+
+onValue(
+ref(db,"chat"),
+(snapshot)=>{
+
+chat.innerHTML="";
+
+let data=
+snapshot.val();
+
+if(!data) return;
+
+let count=0;
+
+Object.entries(data)
+.forEach(([id,msg])=>{
+
+count++;
+
+let canManage=
+
+msg.uid===currentUID ||
+
+currentUser.role==="admin";
+
+chat.innerHTML += `
+
+<div class="news">
+
+<div style="
+display:flex;
+justify-content:space-between;
+align-items:center;
+">
+
+<b>
+
+${msg.user}
+
+</b>
+
+${canManage
+?
+`
+<button
+onclick="messageMenu('${id}')">
+
+⋮
+
+</button>
+`
+:
+""
+}
+
+</div>
+
+<div style="
+margin-top:8px;
+font-size:18px;
+">
+
+${msg.text}
+
+${msg.edited
+?
+" (upraveno)"
+:
+""}
+
+</div>
+
+<div style="
+opacity:.7;
+font-size:12px;
+margin-top:5px;
+">
+
+${msg.time}
+
+</div>
+
+</div>
+
+`;
+
+});
+
+if(!chatOpened){
+
+unreadCount=count;
+
+if(unreadCount>0){
+
+chatBadge.innerHTML=
+unreadCount;
+
+chatBadge.classList.remove(
+"hidden"
+);
+
+}
+
+}
+
+setTimeout(()=>{
+
+chat.scrollTop=
+chat.scrollHeight;
+
+},50);
+
+});
+
+}
+
+/* MENU ZPRÁV */
+
+window.messageMenu=
+async function(id){
+
+let action=
+prompt(
+"upravit nebo smazat"
+);
+
+if(action==="upravit"){
+
+let text=
+prompt(
+"Nová zpráva"
+);
+
+if(!text) return;
+
+await update(
+ref(db,"chat/"+id),
+{
+text:text,
+edited:true
+}
+);
+
+}
+
+if(action==="smazat"){
+
+await remove(
+ref(db,"chat/"+id)
+);
+
+}
+
+};
+
+/* PROFILY */
+
+function loadProfiles(){
+
+onValue(
+ref(db,"users"),
+(snapshot)=>{
+
+profilesList.innerHTML="";
+
+let data=
+snapshot.val();
+
+if(!data) return;
+
+usersCount.innerHTML=
+Object.keys(data).length;
+
+Object.values(data)
+.forEach(user=>{
+
+profilesList.innerHTML += `
+
+<div class="userCard">
+
+<h3>
+
+${user.username}
+
+${user.verified
+?
+'<span class="badge">✓</span>'
+:
+''}
+
+</h3>
+
+<div>
+
+${user.bio || "Bez popisu"}
+
+</div>
+
+<br>
+
+Registrace:
+
+${user.registered}
+
+</div>
+
+`;
+
+});
+
+});
+
+}
+<!-- 4K -->
+
+/* PROFIL */
+
+async function saveProfile(){
+
+let username=
+changeUsername.value.trim();
+
+if(username.length<3){
+
+alert(
+"Minimálně 3 znaky"
+);
+
+return;
+
+}
+
+await update(
+ref(db,"users/"+currentUID),
+{
+username:username,
+bio:bio.value
+}
+);
+
+alert(
+"Profil uložen"
+);
+
+}
+
+/* NASTAVENÍ */
+
+function toggleTheme(){
+
+document.body
+.classList.toggle("light");
+
+}
+
+async function changePassword(){
+
+let pass=
+newPassword.value;
+
+if(pass.length<6){
+
+alert(
+"Heslo musí mít alespoň 6 znaků"
+);
+
+return;
+
+}
+
+try{
+
+await updatePassword(
+auth.currentUser,
+pass
+);
+
+alert(
+"Heslo změněno"
+);
+
+}catch{
+
+alert(
+"Pro změnu hesla se znovu přihlas"
+);
+
+}
+
+}
+
+async function deleteMyAccount(){
+
+if(
+!confirm(
+"Opravdu smazat účet?"
+)
+) return;
+
+await remove(
+ref(db,"users/"+currentUID)
+);
+
+await deleteUser(
+auth.currentUser
+);
+
+}
+
+/* ADMIN PANEL */
+
+function loadUsers(){
+
+onValue(
+ref(db,"users"),
+(snapshot)=>{
+
+users.innerHTML="";
+
+let data=
+snapshot.val();
+
+if(!data) return;
+
+Object.entries(data)
+.forEach(([uid,user])=>{
+
+users.innerHTML += `
+
+<div class="news">
+
+<b>
+
+${user.username}
+
+</b>
+
+<br><br>
+
+Role:
+${user.role}
+
+<br>
+
+Hungy:
+${user.money}
+
+<br>
+
+Ověřen:
+${user.verified
+? "ANO"
+: "NE"}
+
+<br><br>
+
+<button
+onclick="giveMoney('${uid}')">
+
++ Hungy
+
+</button>
+
+<button
+onclick="removeMoney('${uid}')">
+
+- Hungy
+
+</button>
+
+<button
+onclick="banUser('${uid}')">
+
+Ban
+
+</button>
+
+<button
+onclick="unbanUser('${uid}')">
+
+Unban
+
+</button>
+
+<button
+onclick="verifyUser('${uid}')">
+
+Ověřit
+
+</button>
+
+<button
+onclick="deleteAccount('${uid}')">
+
+Smazat účet
+
+</button>
+
+</div>
+
+`;
+
+});
+
+});
+
+}
+
+window.giveMoney=
+async(uid)=>{
+
+let amount=
+Number(
+prompt("Kolik Hungů?")
+);
+
+if(!amount) return;
+
+let snap=
+await get(
+ref(db,"users/"+uid)
+);
+
+let user=
+snap.val();
+
+await update(
+ref(db,"users/"+uid),
+{
+money:
+(user.money||0)
++ amount
+}
+);
+
+};
+
+window.removeMoney=
+async(uid)=>{
+
+let amount=
+Number(
+prompt("Kolik Hungů?")
+);
+
+if(!amount) return;
+
+let snap=
+await get(
+ref(db,"users/"+uid)
+);
+
+let user=
+snap.val();
+
+await update(
+ref(db,"users/"+uid),
+{
+money:
+Math.max(
+0,
+(user.money||0)-amount
+)
+}
+);
+
+};
+
+window.banUser=
+async(uid)=>{
+
+await update(
+ref(db,"users/"+uid),
+{
+banned:true
+}
+);
+
+};
+
+window.unbanUser=
+async(uid)=>{
+
+await update(
+ref(db,"users/"+uid),
+{
+banned:false
+}
+);
+
+};
+
+window.verifyUser=
+async(uid)=>{
+
+await update(
+ref(db,"users/"+uid),
+{
+verified:true
+}
+);
+
+};
+
+window.deleteAccount=
+async(uid)=>{
+
+if(
+!confirm(
+"Smazat účet?"
+)
+) return;
+
+await remove(
+ref(db,"users/"+uid)
+);
+
+};
+
+async function logout(){
+
+await signOut(auth);
+
+}
+<!-- 5K -->
+
+/* BANKA - POUZE SERVER */
+
+async function sendMoney(){
+
+let targetName =
+prompt(
+"Komu poslat Hungy?"
+);
+
+if(!targetName) return;
+
+let amount =
+Number(
+prompt(
+"Kolik Hungů?"
+)
+);
+
+if(
+!amount ||
+amount <= 0
+){
+return;
+}
+
+let usersSnap =
+await get(
+ref(db,"users")
+);
+
+let usersData =
+usersSnap.val();
+
+let targetUID = null;
+let targetUser = null;
+
+Object.entries(usersData)
+.forEach(([uid,user])=>{
+
+if(
+user.username
+.toLowerCase()
+===
+targetName
+.toLowerCase()
+){
+
+targetUID = uid;
+targetUser = user;
+
+}
+
+});
+
+if(!targetUID){
+
+alert(
+"Uživatel neexistuje"
+);
+
+return;
+
+}
+
+if(
+currentUser.money
+<
+amount
+){
+
+alert(
+"Nedostatek Hungů"
+);
+
+return;
+
+}
+
+await update(
+ref(db,"users/"+currentUID),
+{
+money:
+currentUser.money
+-
+amount
+}
+);
+
+await update(
+ref(db,"users/"+targetUID),
+{
+money:
+(targetUser.money||0)
++
+amount
+}
+);
+
+await push(
+ref(db,"transactions"),
+{
+from:
+currentUser.username,
+
+to:
+targetUser.username,
+
+amount:
+amount,
+
+time:
+new Date()
+.toLocaleString()
+}
+);
+
+alert(
+"Platba odeslána"
+);
+
+}
+
+/* HISTORIE PŘEVODŮ */
+
+function loadTransactions(){
+
+onValue(
+ref(db,"transactions"),
+(snapshot)=>{
+
+let data =
+snapshot.val();
+
+if(!data) return;
+
+let html="";
+
+Object.values(data)
+.reverse()
+.forEach(tx=>{
+
+if(
+tx.from===
+currentUser.username ||
+
+tx.to===
+currentUser.username
+){
+
+html += `
+
+<div class="news">
+
+<b>
+
+${tx.from}
+
+</b>
+
+→
+
+<b>
+
+${tx.to}
+
+</b>
+
+<br>
+
+${tx.amount}
+ Hungů
+
+<br>
+
+${tx.time}
+
+</div>
+
+`;
+
+}
+
+});
+
+let historyBox =
+document.getElementById(
+"historyBox"
+);
+
+if(historyBox){
+
+historyBox.innerHTML=
+html;
+
+}
+
+});
+
+}
+
+/* DASHBOARD INFO */
+
+const dashboardInfo =
+
+`
+
+<div class="news">
+
+<b>
+VERZE:
+</b>
+
+1.1
+
+</div>
+
+<div class="news">
+
+<b>
+NOVINKY:
+</b>
+
+<br>
+
+• Banka
+
+<br>
+
+• Upozornění v chatu
+
+</div>
+
+`;
+
+window.addEventListener(
+"load",
+()=>{
+
+let dashboard =
+document.getElementById(
+"dashboard"
+);
+
+if(
+dashboard &&
+!document.getElementById(
+"versionNews"
+)
+){
+
+let div =
+document.createElement(
+"div"
+);
+
+div.id =
+"versionNews";
+
+div.innerHTML =
+dashboardInfo;
+
+dashboard.appendChild(
+div
+);
+
+}
+
+});
+
+/* NAČTENÍ */
+
+window.sendMoney =
+sendMoney;
+
+loadTransactions();
+
+/* KONEC 5K */
+/* 6K = závěrečné dokončení,
+vylepšený admin kód,
+bankovní historie v UI,
+finální inicializace,
+ukončení </script></body></html> */
+<!-- 6K -->
+
+/* VYLEPŠENÝ ADMIN KÓD */
+
+async function useAdminCode(){
+
+let code =
+adminCodeInput.value
+.trim();
+
+if(!code){
+
+alert(
+"Zadej kód"
+);
+
+return;
+
+}
+
+let snap =
+await get(
+ref(db,"codes/"+code)
+);
+
+let data =
+snap.val();
+
+if(!data){
+
+alert(
+"Neplatný kód"
+);
+
+return;
+
+}
+
+if(
+data.type==="single" &&
+data.used
+){
+
+alert(
+"Kód již použit"
+);
+
+return;
+
+}
+
+if(
+data.type==="perUser"
+){
+
+let used =
+(
+await get(
+ref(
+db,
+"codeUses/"+code+"/"+currentUID
+)
+)
+).exists();
+
+if(used){
+
+alert(
+"Tento kód jsi již použil"
+);
+
+return;
+
+}
+
+await set(
+ref(
+db,
+"codeUses/"+code+"/"+currentUID
+),
+true
+);
+
+}
+
+if(
+data.rewardHungy
+){
+
+await update(
+ref(
+db,
+"users/"+currentUID
+),
+{
+money:
+(currentUser.money||0)
++
+data.rewardHungy
+}
+);
+
+}
+
+if(
+data.rewardAdmin
+){
+
+await update(
+ref(
+db,
+"users/"+currentUID
+),
+{
+role:"admin",
+verified:true
+}
+);
+
+}
+
+if(
+data.type==="single"
+){
+
+await update(
+ref(
+db,
+"codes/"+code
+),
+{
+used:true
+}
+);
+
+}
+
+alert(
+"Kód úspěšně použit"
+);
+
+location.reload();
+
+}
+
+/* HISTORIE V UI */
+
+window.addEventListener(
+"load",
+()=>{
+
+let dashboard =
+document.getElementById(
+"dashboard"
+);
+
+if(
+dashboard &&
+!document.getElementById(
+"historyBox"
+)
+){
+
+dashboard.innerHTML +=
+
+`
+
+<h2>
+
+Bankovní historie
+
+</h2>
+
+<div id="historyBox">
+
+</div>
+
+`;
+
+}
+
+});
+
+/* AKTUALIZACE PENĚZ */
+
+async function refreshMoney(){
+
+let snap =
+await get(
+ref(
+db,
+"users/"+currentUID
+)
+);
+
+let data =
+snap.val();
+
+if(!data) return;
+
+currentUser =
+data;
+
+money.innerHTML =
+data.money +
+" Hungů";
+
+}
+
+/* AUTO REFRESH */
+
+setInterval(
+refreshMoney,
+5000
+);
+
+/* CHAT AUTO DOLŮ */
+
+const observer =
+new MutationObserver(
+()=>{
+
+if(
+chat &&
+(
+chat.scrollHeight
+-
+chat.scrollTop
+-
+chat.clientHeight
+)
+<
+150
+){
+
+chat.scrollTop =
+chat.scrollHeight;
+
+}
+
+}
+);
+
+window.addEventListener(
+"load",
+()=>{
+
+if(chat){
+
+observer.observe(
+chat,
+{
+childList:true,
+subtree:true
+}
+);
+
+}
+
+});
+
+/* START */
+
+loadChat();
+loadProfiles();
+loadUsers();
+loadTransactions();
+
+/* EXPORT */
+
+window.refreshMoney =
+refreshMoney;
+
+/* KONEC */
+
+</script>
+
+</body>
+</html>
