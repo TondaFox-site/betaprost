@@ -5,137 +5,36 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Unga Bunga V2</title>
 
-<script type="module">
-
-import { initializeApp } 
-from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-
-import {
-getDatabase, ref, set, get, push, onValue, update
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
-
-import {
-getAuth,
-createUserWithEmailAndPassword,
-signInWithEmailAndPassword,
-onAuthStateChanged,
-signOut
-} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
-
-/* 🔥 FIREBASE */
-const firebaseConfig = {
-apiKey:"AIzaSyB-kVC8nGY1JEFEV79Yexpg8-etJDXIp68",
-authDomain:"muj-flopik.firebaseapp.com",
-databaseURL:"https://muj-flopik-default-rtdb.europe-west1.firebasedatabase.app",
-projectId:"muj-flopik",
-storageBucket:"muj-flopik.firebasestorage.app",
-messagingSenderId:"198721412738",
-appId:"1:198721412738:web:a3644bda03f4bc682d5e9b"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
-
-let currentUser=null;
-let currentUID=null;
-
-/* ========== AUTH ========== */
-
-window.register = async function(){
-let email=document.getElementById("email").value;
-let pass=document.getElementById("pass").value;
-let username=document.getElementById("username").value;
-
-let userCred = await createUserWithEmailAndPassword(auth,email,pass);
-
-await set(ref(db,"users/"+userCred.user.uid),{
-email,
-username,
-money:1000,
-role:"user"
-});
-
-alert("Registrován");
-};
-
-window.login = async function(){
-let email=document.getElementById("email").value;
-let pass=document.getElementById("pass").value;
-
-await signInWithEmailAndPassword(auth,email,pass);
-};
-
-window.logout = async function(){
-await signOut(auth);
-};
-
-/* ========== USER STATE ========== */
-
-onAuthStateChanged(auth,async(user)=>{
-
-if(!user){
-document.getElementById("app").style.display="none";
-document.getElementById("login").style.display="block";
-return;
-}
-
-currentUID=user.uid;
-
-let snap=await get(ref(db,"users/"+user.uid));
-currentUser=snap.val();
-
-document.getElementById("login").style.display="none";
-document.getElementById("app").style.display="block";
-
-loadDashboard();
-
-});
-
-function loadDashboard(){
-document.getElementById("info").innerHTML=
-"Uživatel: "+currentUser.username+"<br>"+
-"Hungy: "+currentUser.money;
-}
-
-</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
 <style>
-body{
-margin:0;
-font-family:Arial;
-background:#0f172a;
-color:white;
-}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Arial;}
+body{background:#0f172a;color:white;transition:0.3s;}
+.container{max-width:1200px;margin:auto;padding:20px;}
 
-.container{
-padding:20px;
-max-width:600px;
-margin:auto;
-}
+.card{background:#1e293b;padding:20px;border-radius:15px;margin-top:15px;}
+input,button,textarea{width:100%;padding:10px;margin-top:10px;border-radius:10px;border:none;font-size:16px;}
 
-.card{
-background:#1e293b;
-padding:20px;
-border-radius:15px;
-margin-top:20px;
-}
+button{background:#2563eb;color:white;font-weight:bold;cursor:pointer;}
+button:hover{opacity:0.9;}
 
-input,button{
-width:100%;
-padding:10px;
-margin-top:10px;
-border-radius:10px;
-border:none;
-}
+.hidden{display:none;}
 
-button{
-background:#2563eb;
-color:white;
-cursor:pointer;
-}
+.menu{display:flex;gap:10px;flex-wrap:wrap;margin-top:15px;}
+.menu button{flex:1;min-width:120px;}
+
+.chatBox{height:300px;overflow:auto;background:#0f172a;padding:10px;border-radius:10px;}
+
+.msg{background:#334155;margin-top:10px;padding:10px;border-radius:10px;position:relative;}
+
+.msg small{opacity:0.7;}
+
+.dots{position:absolute;right:10px;top:10px;cursor:pointer;}
+
+.badge{background:red;color:white;border-radius:50%;padding:2px 6px;font-size:12px;margin-left:5px;}
+
+.userCard{background:#334155;padding:10px;border-radius:10px;margin-top:10px;}
 </style>
-
 </head>
 
 <body>
@@ -143,31 +42,239 @@ cursor:pointer;
 <div class="container">
 
 <!-- LOGIN -->
-<div id="login" class="card">
-
-<h2>Přihlášení</h2>
-
+<div id="loginPage" class="card">
+<h2>Login</h2>
 <input id="email" placeholder="Email">
 <input id="pass" type="password" placeholder="Heslo">
-<input id="username" placeholder="Jméno (jen registrace)">
-
-<button onclick="login()">Login</button>
-<button onclick="register()">Register</button>
-
+<input id="username" placeholder="Jméno">
+<button onclick="register()">Registrovat</button>
+<button onclick="login()">Přihlásit</button>
 </div>
 
 <!-- APP -->
-<div id="app" class="card" style="display:none">
+<div id="app" class="hidden">
 
-<h2>Dashboard</h2>
+<div class="card">
+<h2 id="welcome"></h2>
+<div id="role"></div>
 
-<div id="info"></div>
+<div class="menu">
+<button onclick="tab('dash')">Dashboard</button>
 
+<button onclick="openChatTab()">
+Chat <span id="unreadBadge" class="badge hidden">0</span>
+</button>
+
+<button onclick="tab('profile')">Profil</button>
+<button onclick="tab('users')">Profily</button>
+<button onclick="tab('admin')" id="adminBtn" class="hidden">Admin</button>
 <button onclick="logout()">Logout</button>
+</div>
+</div>
 
+<!-- DASHBOARD -->
+<div id="dash" class="card tab">
+<h2>Dashboard</h2>
+<div id="money"></div>
+<p>VERZE: 1.1</p>
+<p>NOVINKY: Banka a upozornění v chatu</p>
+</div>
+
+<!-- CHAT -->
+<div id="chatTab" class="card tab hidden">
+<h2>Chat</h2>
+
+<div id="chat" class="chatBox"></div>
+
+<input id="msgInput" placeholder="Zpráva">
+<button onclick="sendMsg()">Poslat</button>
+</div>
+
+<!-- PROFILE -->
+<div id="profile" class="card tab hidden">
+<h2>Profil</h2>
+<textarea id="bio"></textarea>
+<button onclick="saveProfile()">Uložit</button>
+</div>
+
+<!-- USERS -->
+<div id="users" class="card tab hidden">
+<h2>Profily</h2>
+<div id="userList"></div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="card tab hidden">
+<h2>Admin panel</h2>
+<div id="adminUsers"></div>
 </div>
 
 </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import {
+getDatabase, ref, set, get, push, update, remove, onValue
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+import {
+getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+const firebaseConfig = {
+apiKey:"AIzaSyB...",
+authDomain:"muj-flopik.firebaseapp.com",
+databaseURL:"https://muj-flopik-default-rtdb.europe-west1.firebasedatabase.app",
+projectId:"muj-flopik"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+let userData;
+let uid;
+
+window.register = async () => {
+await createUserWithEmailAndPassword(auth,email.value,pass.value);
+
+let u = auth.currentUser;
+
+await set(ref(db,"users/"+u.uid),{
+username:username.value,
+money:1000,
+bio:"",
+role:"user",
+verified:false,
+lastSeen:0
+});
+};
+
+window.login = async () => {
+await signInWithEmailAndPassword(auth,email.value,pass.value);
+};
+
+onAuthStateChanged(auth, async (u)=>{
+if(!u){loginPage.classList.remove("hidden");app.classList.add("hidden");return;}
+
+uid=u.uid;
+let snap = await get(ref(db,"users/"+uid));
+userData = snap.val();
+
+loginPage.classList.add("hidden");
+app.classList.remove("hidden");
+
+welcome.innerText=userData.username;
+money.innerText="Money: "+userData.money;
+
+if(userData.role==="admin") adminBtn.classList.remove("hidden");
+
+loadChat();
+loadUsers();
+});
+
+function tab(id){
+document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+}
+
+window.openChatTab=()=>{
+tab('chatTab');
+update(ref(db,"users/"+uid),{lastSeen:Date.now()});
+setTimeout(()=>chat.scrollTop=chat.scrollHeight,100);
+updateUnread();
+}
+
+window.sendMsg=async()=>{
+if(!msgInput.value) return;
+
+await push(ref(db,"chat"),{
+user:userData.username,
+text:msgInput.value,
+uid,
+time:Date.now()
+});
+
+msgInput.value="";
+};
+
+function loadChat(){
+onValue(ref(db,"chat"),(snap)=>{
+chat.innerHTML="";
+let data=snap.val();
+if(!data) return;
+
+Object.entries(data).forEach(([id,m])=>{
+chat.innerHTML+=`
+<div class="msg">
+<b>${m.user}</b>
+<div>${m.text}</div>
+<small>${new Date(m.time).toLocaleTimeString()}</small>
+
+<div class="dots" onclick="msgMenu('${id}','${m.uid}','${m.text}')">⋮</div>
+</div>`;
+});
+
+chat.scrollTop=chat.scrollHeight;
+updateUnread();
+});
+}
+
+window.msgMenu=(id,owner,text)=>{
+if(userData.role!=="admin" && uid!==owner) return;
+
+let act=prompt("edit / del");
+if(act==="del") remove(ref(db,"chat/"+id));
+if(act==="edit"){
+let t=prompt("new text",text);
+update(ref(db,"chat/"+id),{text:t});
+}
+};
+
+function updateUnread(){
+onValue(ref(db,"chat"),(snap)=>{
+let data=snap.val()||{};
+let count=0;
+
+Object.values(data).forEach(m=>{
+if(m.time>userData.lastSeen) count++;
+});
+
+unreadBadge.innerText=count;
+if(count>0) unreadBadge.classList.remove("hidden");
+else unreadBadge.classList.add("hidden");
+});
+}
+
+window.saveProfile=()=>{
+update(ref(db,"users/"+uid),{bio:bio.value});
+};
+
+function loadUsers(){
+onValue(ref(db,"users"),(snap)=>{
+userList.innerHTML="";
+adminUsers.innerHTML="";
+let data=snap.val();
+
+Object.entries(data).forEach(([id,u])=>{
+userList.innerHTML+=`<div class="userCard">${u.username}</div>`;
+
+adminUsers.innerHTML+=`
+<div class="userCard">
+<b>${u.username}</b><br>
+
+<button onclick="update(ref(db,'users/${id}'),{money:999})">+Money</button>
+<button onclick="update(ref(db,'users/${id}'),{banned:true})">Ban</button>
+<button onclick="update(ref(db,'users/${id}'),{banned:false})">Unban</button>
+<button onclick="update(ref(db,'users/${id}'),{verified:true})">Verify</button>
+<button onclick="remove(ref(db,'users/${id}'))">Delete</button>
+</div>`;
+});
+});
+}
+
+window.logout=()=>signOut(auth);
+
+</script>
 
 </body>
 </html>
