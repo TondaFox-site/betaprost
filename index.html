@@ -3,249 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>Unga Bunga V2</title>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
-<style>
-
-*{box-sizing:border-box;}
-
-body{
-margin:0;
-font-family:Arial;
-background:#0f172a;
-color:white;
-transition:0.3s;
-}
-
-body.light{
-background:#f1f5f9;
-color:black;
-}
-
-.container{
-max-width:1200px;
-margin:auto;
-padding:20px;
-}
-
-.card{
-background:#1e293b;
-padding:20px;
-border-radius:20px;
-margin-top:20px;
-}
-
-body.light .card{background:white;}
-
-input,textarea,select,button{
-width:100%;
-padding:12px;
-margin-top:10px;
-border:none;
-border-radius:12px;
-font-size:16px;
-}
-
-button{
-background:#2563eb;
-color:white;
-font-weight:bold;
-cursor:pointer;
-transition:0.2s;
-position:relative;
-}
-
-button:hover{transform:scale(1.02);}
-
-.hidden{display:none;}
-
-.menu{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:20px;
-}
-
-.menu button{
-flex:1;
-min-width:120px;
-}
-
-/* 🔴 UNREAD BADGE */
-.badgeNotify{
-position:absolute;
-top:5px;
-right:10px;
-background:red;
-color:white;
-border-radius:50%;
-padding:2px 6px;
-font-size:12px;
-display:none;
-}
-
-.news{
-background:#334155;
-padding:15px;
-border-radius:15px;
-margin-top:10px;
-}
-
-body.light .news{background:#cbd5e1;}
-
-.chat{
-height:350px;
-overflow:auto;
-background:#0f172a;
-padding:10px;
-border-radius:12px;
-margin-top:10px;
-display:flex;
-flex-direction:column;
-}
-
-.msg{
-background:#334155;
-padding:15px;
-border-radius:15px;
-margin-top:10px;
-position:relative;
-}
-
-.msgText{
-font-size:18px;
-font-weight:bold;
-margin-top:8px;
-word-break:break-word;
-}
-
-.msgInfo{
-font-size:12px;
-opacity:0.7;
-margin-top:5px;
-}
-
-/* 3 tečky */
-.msgMenu{
-position:absolute;
-top:10px;
-right:10px;
-cursor:pointer;
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="container">
-
-<!-- LOGIN (beze změny) -->
-<div id="loginPage">
-<div class="card">
-
-<h1>Unga Bunga V2</h1>
-
-<input id="loginEmail" placeholder="Email">
-<input id="loginPass" type="password" placeholder="Heslo">
-<input id="registerUsername" placeholder="Uživatelské jméno">
-
-<button onclick="login()">Přihlásit</button>
-<button onclick="register()">Registrovat</button>
-
-</div>
-</div>
-
-<!-- APP -->
-<div id="appPage" class="hidden">
-
-<div class="card">
-
-<div class="menu">
-
-<button onclick="tab('dashboard')">Dashboard</button>
-
-<!-- 🔴 CHAT BADGE -->
-<button onclick="tab('chatTab')" id="chatBtn">
-Chat
-<span id="chatBadge" class="badgeNotify">0</span>
-</button>
-
-<button onclick="tab('profileTab')">Profil</button>
-<button onclick="tab('profilesTab')">Profily</button>
-<button onclick="tab('settingsTab')">Nastavení</button>
-
-<button id="adminBtn" class="hidden" onclick="tab('adminTab')">
-Admin
-</button>
-
-</div>
-
-</div>
-
-<!-- DASHBOARD 🔥 -->
-<div class="card tab" id="dashboard">
-
-<h2>Dashboard</h2>
-
-<h1 id="money"></h1>
-
-<!-- NOVÉ -->
-<div class="news">
-VERZE: <b>1.1</b>
-</div>
-
-<div class="news">
-NOVINKY: Banka a upozornění v chatu.
-</div>
-
-<div class="news">
-Počet uživatelů:
-<span id="usersCount"></span>
-</div>
-
-</div>
-
-<!-- CHAT -->
-<div class="card tab hidden" id="chatTab">
-
-<h2>Globální chat</h2>
-
-<div class="chat" id="chat"></div>
-
-<input id="chatInput" placeholder="Zpráva">
-
-<button onclick="sendChat()">Poslat</button>
-
-</div>
-
-<!-- PROFILE / PROFILES / SETTINGS / ADMIN zůstává beze změn zatím -->
-
-</div>
 
 <script type="module">
 
-import { initializeApp }
+import { initializeApp } 
 from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
 
 import {
-getDatabase, ref, set, get, push, update, remove, onValue
+getDatabase, ref, set, get, push, onValue, update
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
 
 import {
-getAuth, createUserWithEmailAndPassword,
-signInWithEmailAndPassword, signOut,
-onAuthStateChanged
+getAuth,
+createUserWithEmailAndPassword,
+signInWithEmailAndPassword,
+onAuthStateChanged,
+signOut
 } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
 
+/* 🔥 FIREBASE */
 const firebaseConfig = {
-apiKey:"AIzaSyB-***",
+apiKey:"AIzaSyB-kVC8nGY1JEFEV79Yexpg8-etJDXIp68",
 authDomain:"muj-flopik.firebaseapp.com",
 databaseURL:"https://muj-flopik-default-rtdb.europe-west1.firebasedatabase.app",
 projectId:"muj-flopik",
@@ -261,72 +40,134 @@ const auth = getAuth(app);
 let currentUser=null;
 let currentUID=null;
 
-/* 🔴 NOVÉ: UNREAD CHAT */
-let unreadMessages = 0;
+/* ========== AUTH ========== */
 
-function updateBadge(){
-let b = document.getElementById("chatBadge");
-if(unreadMessages > 0){
-b.style.display="inline-block";
-b.innerText = unreadMessages;
-}else{
-b.style.display="none";
-}
-}
+window.register = async function(){
+let email=document.getElementById("email").value;
+let pass=document.getElementById("pass").value;
+let username=document.getElementById("username").value;
 
-/* CHAT LOAD + AUTO SCROLL + UNREAD */
-function loadChat(){
-onValue(ref(db,"chat"),(snap)=>{
+let userCred = await createUserWithEmailAndPassword(auth,email,pass);
 
-let chatBox=document.getElementById("chat");
-chatBox.innerHTML="";
-
-let data=snap.val();
-if(!data) return;
-
-Object.entries(data).forEach(([id,msg])=>{
-
-chatBox.innerHTML += `
-<div class="msg">
-<div class="msgMenu">⋮</div>
-
-<div class="msgText">${msg.text}</div>
-
-<div class="msgInfo">
-${msg.user} • ${msg.time}
-</div>
-
-</div>
-`;
-
+await set(ref(db,"users/"+userCred.user.uid),{
+email,
+username,
+money:1000,
+role:"user"
 });
 
-/* auto scroll dolů */
-chatBox.scrollTop = chatBox.scrollHeight;
-
-/* 🔴 simulace unread */
-if(document.getElementById("chatTab").classList.contains("hidden")){
-unreadMessages++;
-updateBadge();
-}
-
-});
-}
-
-/* KLIKNUTÍ NA CHAT = RESET BADGE */
-window.tab=function(id){
-
-document.querySelectorAll(".tab").forEach(t=>t.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
-
-if(id==="chatTab"){
-unreadMessages=0;
-updateBadge();
-}
-
+alert("Registrován");
 };
 
+window.login = async function(){
+let email=document.getElementById("email").value;
+let pass=document.getElementById("pass").value;
+
+await signInWithEmailAndPassword(auth,email,pass);
+};
+
+window.logout = async function(){
+await signOut(auth);
+};
+
+/* ========== USER STATE ========== */
+
+onAuthStateChanged(auth,async(user)=>{
+
+if(!user){
+document.getElementById("app").style.display="none";
+document.getElementById("login").style.display="block";
+return;
+}
+
+currentUID=user.uid;
+
+let snap=await get(ref(db,"users/"+user.uid));
+currentUser=snap.val();
+
+document.getElementById("login").style.display="none";
+document.getElementById("app").style.display="block";
+
+loadDashboard();
+
+});
+
+function loadDashboard(){
+document.getElementById("info").innerHTML=
+"Uživatel: "+currentUser.username+"<br>"+
+"Hungy: "+currentUser.money;
+}
+
 </script>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:#0f172a;
+color:white;
+}
+
+.container{
+padding:20px;
+max-width:600px;
+margin:auto;
+}
+
+.card{
+background:#1e293b;
+padding:20px;
+border-radius:15px;
+margin-top:20px;
+}
+
+input,button{
+width:100%;
+padding:10px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+}
+
+button{
+background:#2563eb;
+color:white;
+cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="login" class="card">
+
+<h2>Přihlášení</h2>
+
+<input id="email" placeholder="Email">
+<input id="pass" type="password" placeholder="Heslo">
+<input id="username" placeholder="Jméno (jen registrace)">
+
+<button onclick="login()">Login</button>
+<button onclick="register()">Register</button>
+
+</div>
+
+<!-- APP -->
+<div id="app" class="card" style="display:none">
+
+<h2>Dashboard</h2>
+
+<div id="info"></div>
+
+<button onclick="logout()">Logout</button>
+
+</div>
+
+</div>
 
 </body>
 </html>
