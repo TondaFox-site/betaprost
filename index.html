@@ -1,3 +1,6 @@
+YTool.netDomovská stránka 
+ Čeština 
+Online náhled HTML kódu
 <!DOCTYPE html>
 <html lang="cs">
 <head>
@@ -226,8 +229,24 @@ id="avatar">
 Dashboard
 </button>
 
-<button onclick="tab('chatTab')">
+<button
+id="chatBtn"
+onclick="openChat()">
+
 Chat
+<span id="chatBadge"
+style="
+background:red;
+color:white;
+border-radius:50%;
+padding:2px 7px;
+font-size:12px;
+display:none;
+margin-left:5px;
+">
+0
+</span>
+
 </button>
 
 <button onclick="tab('profileTab')">
@@ -490,6 +509,8 @@ getAuth(app);
 
 let currentUser = null;
 let currentUID = null;
+let unreadMessages = 0;
+let lastMessageCount = 0;
 
 window.login=login;
 window.register=register;
@@ -704,11 +725,48 @@ loadBank();
 
 function tab(id){
 
+window.openChat = function(){
+
+tab("chatTab");
+
+unreadMessages = 0;
+
+chatBadge.style.display = "none";
+
+}
+
 document
 .querySelectorAll(".tab")
 .forEach(t=>{
 
 t.classList.add("hidden");
+
+if(
+document
+.getElementById("chatTab")
+.classList
+.contains("hidden")
+){
+
+if(count > lastMessageCount){
+
+unreadMessages +=
+count - lastMessageCount;
+
+chatBadge.innerHTML =
+unreadMessages;
+
+chatBadge.style.display =
+"inline-block";
+
+}
+
+}
+
+lastMessageCount = count;
+
+chat.scrollTop =
+chat.scrollHeight;
 
 });
 
@@ -757,12 +815,20 @@ chat.innerHTML="";
 
 let data =
 snapshot.val();
+let count =
+Object.keys(data).length;
 
 if(!data) return;
 
 Object.entries(data).forEach(([id,msg])=>{
 
 chat.innerHTML += `
+...
+`;
+
+});
+
+chat.scrollTop = chat.scrollHeight;
 
 <div class="msg">
 
@@ -1458,3 +1524,4 @@ await signOut(auth);
 
 </body>
 </html>
+ 
