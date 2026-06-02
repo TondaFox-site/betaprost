@@ -226,19 +226,18 @@ id="avatar">
 Dashboard
 </button>
 
-<button
-id="chatBtn"
-onclick="openChat()">
+<button onclick="openChat()">
 
 Chat
+
 <span id="chatBadge"
 style="
+display:none;
 background:red;
 color:white;
 border-radius:50%;
 padding:2px 7px;
 font-size:12px;
-display:none;
 margin-left:5px;
 ">
 0
@@ -507,7 +506,8 @@ getAuth(app);
 let currentUser = null;
 let currentUID = null;
 let unreadMessages = 0;
-let lastMessageCount = 0;
+let chatOpened = false;
+let firstChatLoad = true;
 
 window.login=login;
 window.register=register;
@@ -520,6 +520,7 @@ window.changePassword=changePassword;
 window.useAdminCode=useAdminCode;
 window.deleteMyAccount=deleteMyAccount;
 window.sendMoney=sendMoney;
+window.openChat=openChat;
 
 /* REGISTER */
 
@@ -717,18 +718,25 @@ loadUsers();
 loadBank();
 
 }
+function openChat(){
+
+chatOpened = true;
+
+unreadMessages = 0;
+
+chatBadge.style.display = "none";
+
+tab("chatTab");
+
+}
 
 /* TABS */
 
 function tab(id){
 
-window.openChat = function(){
+if(id !== "chatTab"){
 
-tab("chatTab");
-
-unreadMessages = 0;
-
-chatBadge.style.display = "none";
+chatOpened = false;
 
 }
 
@@ -737,33 +745,6 @@ document
 .forEach(t=>{
 
 t.classList.add("hidden");
-
-if(
-document
-.getElementById("chatTab")
-.classList
-.contains("hidden")
-){
-
-if(count > lastMessageCount){
-
-unreadMessages +=
-count - lastMessageCount;
-
-chatBadge.innerHTML =
-unreadMessages;
-
-chatBadge.style.display =
-"inline-block";
-
-}
-
-}
-
-lastMessageCount = count;
-
-chat.scrollTop =
-chat.scrollHeight;
 
 });
 
@@ -808,24 +789,31 @@ onValue(
 ref(db,"chat"),
 (snapshot)=>{
 
+
 chat.innerHTML="";
 
 let data =
 snapshot.val();
-let count =
+let count = 0;
+
+if(data){
+
+count =
 Object.keys(data).length;
 
-if(!data) return;
+}
+
+if(!data){
+
+chat.innerHTML="";
+
+return;
+
+}
 
 Object.entries(data).forEach(([id,msg])=>{
 
 chat.innerHTML += `
-...
-`;
-
-});
-
-chat.scrollTop = chat.scrollHeight;
 
 <div class="msg">
 
@@ -865,6 +853,28 @@ Smazat
 `;
 
 });
+
+chat.scrollTop =
+chat.scrollHeight;
+
+if(firstChatLoad){
+
+firstChatLoad = false;
+return;
+
+}
+
+if(!chatOpened){
+
+unreadMessages++;
+
+chatBadge.innerHTML =
+unreadMessages;
+
+chatBadge.style.display =
+"inline-block";
+
+}
 
 }
 );
