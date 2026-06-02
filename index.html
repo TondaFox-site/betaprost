@@ -226,23 +226,8 @@ id="avatar">
 Dashboard
 </button>
 
-<button onclick="openChat()">
-
+<button onclick="tab('chatTab')">
 Chat
-
-<span id="chatBadge"
-style="
-display:none;
-background:red;
-color:white;
-border-radius:50%;
-padding:2px 7px;
-font-size:12px;
-margin-left:5px;
-">
-0
-</span>
-
 </button>
 
 <button onclick="tab('profileTab')">
@@ -505,9 +490,6 @@ getAuth(app);
 
 let currentUser = null;
 let currentUID = null;
-let unreadMessages = 0;
-let chatOpened = false;
-let firstChatLoad = true;
 
 window.login=login;
 window.register=register;
@@ -520,7 +502,6 @@ window.changePassword=changePassword;
 window.useAdminCode=useAdminCode;
 window.deleteMyAccount=deleteMyAccount;
 window.sendMoney=sendMoney;
-window.openChat=openChat;
 
 /* REGISTER */
 
@@ -718,27 +699,10 @@ loadUsers();
 loadBank();
 
 }
-function openChat(){
-
-chatOpened = true;
-
-unreadMessages = 0;
-
-chatBadge.style.display = "none";
-
-tab("chatTab");
-
-}
 
 /* TABS */
 
 function tab(id){
-
-if(id !== "chatTab"){
-
-chatOpened = false;
-
-}
 
 document
 .querySelectorAll(".tab")
@@ -789,27 +753,12 @@ onValue(
 ref(db,"chat"),
 (snapshot)=>{
 
-
 chat.innerHTML="";
 
 let data =
 snapshot.val();
-let count = 0;
 
-if(data){
-
-count =
-Object.keys(data).length;
-
-}
-
-if(!data){
-
-chat.innerHTML="";
-
-return;
-
-}
+if(!data) return;
 
 Object.entries(data).forEach(([id,msg])=>{
 
@@ -853,28 +802,6 @@ Smazat
 `;
 
 });
-
-chat.scrollTop =
-chat.scrollHeight;
-
-if(firstChatLoad){
-
-firstChatLoad = false;
-return;
-
-}
-
-if(!chatOpened){
-
-unreadMessages++;
-
-chatBadge.innerHTML =
-unreadMessages;
-
-chatBadge.style.display =
-"inline-block";
-
-}
 
 }
 );
@@ -1185,12 +1112,12 @@ Ban
 Unban
 </button>
 
-<button onclick="muteUser('${uid}')">
-Mute
+<button onclick="verifyUser('${uid}')">
+Ověřit
 </button>
 
-<button onclick="unmuteUser('${uid}')">
-Unmute
+<button onclick="deleteAccountAdmin('${uid}')">
+Smazat účet
 </button>
 
 <button onclick="giveMoney('${uid}')">
@@ -1236,27 +1163,33 @@ banned:false
 
 };
 
-window.muteUser =
+window.verifyUser =
 async function(uid){
 
 await update(
 ref(db,"users/"+uid),
 {
-muted:true
+verified:true
 }
 );
+
+alert("Účet ověřen");
 
 };
 
-window.unmuteUser =
+window.deleteAccountAdmin =
 async function(uid){
 
-await update(
-ref(db,"users/"+uid),
-{
-muted:false
-}
+let sure =
+confirm("Smazat účet?");
+
+if(!sure) return;
+
+await remove(
+ref(db,"users/"+uid)
 );
+
+alert("Účet smazán");
 
 };
 
